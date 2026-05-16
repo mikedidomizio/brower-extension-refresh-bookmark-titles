@@ -1,0 +1,16 @@
+{
+  "name": "chrome-refresh-bookmarks",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc && shx cp manifest.json popup.html popup.css dist/"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/chrome": "^0.0.268",
+    "shx": "^0.3.4",
+    "typescript": "^5.5.3"
+  },
+  "private": true
+}
