@@ -8,12 +8,19 @@
 <body>
   <div class="container">
     <h1>Refresh Bookmarks</h1>
-    <p class="description">Click the button below to find bookmarks with empty titles and update them with page titles.</p>
+    <p class="description">Choose what to update, then fetch page titles for matching bookmarks.</p>
+
+    <label class="scopeOption">
+      <input type="checkbox" id="updateAllCheckbox">
+      Update all bookmarks (not just empty titles)
+    </label>
 
     <button id="refreshButton" class="button">Refresh Now</button>
 
-    <div id="status" class="status"></div>
-    <div id="result" class="result"></div>
+    <div id="output" class="output hidden">
+      <div id="status" class="status"></div>
+      <div id="result" class="result"></div>
+    </div>
   </div>
 
   <script src="popup.js"></script>

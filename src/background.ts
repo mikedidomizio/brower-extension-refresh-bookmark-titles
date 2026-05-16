@@ -38,24 +38,43 @@ function isValidUrl(url: string): boolean {
   }
 }
 
-async function refreshBookmarks(): Promise<{ updated: number; failed: number; message: string }> {
+type RefreshMode = 'empty' | 'all';
+
+type RefreshResult = {
+  processed: number;
+  updated: number;
+  unchanged: number;
+  failed: number;
+  message: string;
+};
+
+async function refreshBookmarks(mode: RefreshMode = 'empty'): Promise<RefreshResult> {
   const bookmarks = await chrome.bookmarks.getTree();
+  let processed = 0;
   let updated = 0;
+  let unchanged = 0;
   let failed = 0;
 
   async function processNode(node: chrome.bookmarks.BookmarkTreeNode): Promise<void> {
-    // If it's a bookmark (has url) and has empty or missing title
-    if (node.url && (!node.title || node.title.trim() === '')) {
+    const shouldProcess = Boolean(
+      node.url &&
+      (mode === 'all' || !node.title || node.title.trim() === '')
+    );
+
+    if (shouldProcess && node.url) {
       if (isValidUrl(node.url)) {
-        console.log(`Processing bookmark with empty title: ${node.url}`);
+        processed++;
 
         const newTitle = await fetchPageTitle(node.url);
 
         if (newTitle) {
           try {
-            await chrome.bookmarks.update(node.id, { title: newTitle });
-            console.log(`Updated bookmark ${node.id}: "${newTitle}"`);
-            updated++;
+            if (node.title !== newTitle) {
+              await chrome.bookmarks.update(node.id, { title: newTitle });
+              updated++;
+            } else {
+              unchanged++;
+            }
           } catch (error) {
             console.error(`Failed to update bookmark ${node.id}:`, error);
             failed++;
@@ -82,19 +101,21 @@ async function refreshBookmarks(): Promise<{ updated: number; failed: number; me
     await processNode(root);
   }
 
-  const message = `Refreshed bookmarks: ${updated} updated, ${failed} failed`;
+  const modeLabel = mode === 'all' ? 'all bookmarks' : 'empty-title bookmarks';
+  const message = `Refreshed ${modeLabel}: ${processed} processed, ${updated} updated, ${unchanged} unchanged, ${failed} failed`;
   console.log(message);
-  return { updated, failed, message };
+  return { processed, updated, unchanged, failed, message };
 }
 
 // Listen for messages from the popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'refreshBookmarks') {
-    refreshBookmarks().then((result) => {
+    const mode: RefreshMode = request.mode === 'all' ? 'all' : 'empty';
+    refreshBookmarks(mode).then((result) => {
       sendResponse(result);
     }).catch((error) => {
       console.error('Error refreshing bookmarks:', error);
-      sendResponse({ updated: 0, failed: 0, message: `Error: ${error.message}` });
+      sendResponse({ processed: 0, updated: 0, unchanged: 0, failed: 0, message: `Error: ${error.message}` });
     });
 
     // Return true to indicate we'll send the response asynchronously
