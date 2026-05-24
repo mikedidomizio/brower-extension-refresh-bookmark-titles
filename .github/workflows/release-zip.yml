@@ -1,0 +1,35 @@
+name: Release Zip
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build-release-zip:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build and package extension
+        run: npm run release:zip -- --tag=${{ github.ref_name }}
+
+      - name: Upload zip artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: chrome-refresh-bookmarks-${{ github.ref_name }}
+          path: release/*.zip
+          if-no-files-found: error
+
+

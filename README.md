@@ -56,6 +56,18 @@ To make changes:
 2. Run `npm run build`
 3. Reload the extension in Chrome (on `chrome://extensions/`)
 
+## Release Packaging
+
+Create a Chrome Web Store upload zip locally:
+
+```bash
+npm run release:zip
+```
+
+This command validates that `package.json` and `manifest.json` versions match, builds `dist/`, and writes a zip file to `release/`.
+
+When you push a git tag (for example `v1.0.1`), GitHub Actions runs the same packaging command, validates the tag matches the extension version, and uploads the zip as a build artifact.
+
 ## Files
 
 - `src/background.ts` - Bookmark scanning/fetch/update logic
