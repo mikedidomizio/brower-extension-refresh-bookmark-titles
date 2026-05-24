@@ -53,7 +53,7 @@ The extension requests:
 To make changes:
 
 1. Edit the TypeScript files in `src/`
-2. Run `npm run build`
+2. Run `npm run build` (this also regenerates extension icons)
 3. Reload the extension in Chrome (on `chrome://extensions/`)
 
 ## Release Packaging
@@ -74,4 +74,5 @@ When you push a git tag (for example `v1.0.1`), GitHub Actions runs the same pac
 - `src/popup.ts` - Popup interactions and request mode
 - `popup.html` - Popup structure
 - `popup.css` - Popup styles
+- `icons/` - Generated extension icons (16, 32, 48, 128)
 - `manifest.json` - Extension manifest

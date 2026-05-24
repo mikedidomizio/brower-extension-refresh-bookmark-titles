@@ -4,13 +4,15 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc && shx cp manifest.json popup.html popup.css dist/",
+    "icons:generate": "node scripts/generate-icons.mjs",
+    "build": "npm run icons:generate && tsc && shx cp manifest.json popup.html popup.css dist/ && shx cp -r icons dist/",
     "release:zip": "node scripts/release-zip.mjs"
   },
   "dependencies": {},
   "devDependencies": {
     "@types/chrome": "^0.0.268",
     "archiver": "^7.0.1",
+    "sharp": "^0.34.2",
     "shx": "^0.3.4",
     "typescript": "^5.5.3"
   },
