@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Refresh Bookmarks",
   "version": "1.0.0",
-  "description": "Automatically update bookmarks with empty titles by fetching page titles",
+  "description": "Fetch live page titles and update your bookmarks automatically",
   "permissions": ["bookmarks", "activeTab"],
   "host_permissions": [
     "<all_urls>"

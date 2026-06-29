@@ -1,7 +1,7 @@
 {
-  "name": "chrome-refresh-bookmarks",
+  "name": "refresh-bookmarks",
   "version": "1.0.0",
-  "description": "",
+  "description": "Browser extension that fetches live page titles and updates your bookmarks automatically",
   "main": "dist/index.js",
   "scripts": {
     "icons:generate": "node scripts/generate-icons.mjs",
