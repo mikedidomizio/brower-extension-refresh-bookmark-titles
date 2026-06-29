@@ -1,5 +1,3 @@
-// Popup script for the Refresh Bookmarks extension
-
 document.addEventListener('DOMContentLoaded', () => {
   const button = document.getElementById('refreshButton') as HTMLButtonElement;
   const updateAllCheckbox = document.getElementById('updateAllCheckbox') as HTMLInputElement;
@@ -10,29 +8,36 @@ document.addEventListener('DOMContentLoaded', () => {
   button.addEventListener('click', async () => {
     button.disabled = true;
     output.classList.remove('hidden');
-    status.textContent = 'Refreshing bookmarks...';
+    status.textContent = 'Starting...';
     status.className = 'status loading';
     result.textContent = '';
 
-    try {
-      const response = await chrome.runtime.sendMessage({
-        action: 'refreshBookmarks',
-        mode: updateAllCheckbox.checked ? 'empty' : 'all'
-      });
+    const port = chrome.runtime.connect({ name: 'refresh' });
 
-      status.textContent = 'Complete!';
-      status.className = 'status success';
-      result.textContent = response.message;
+    port.onMessage.addListener((message) => {
+      if (message.type === 'progress') {
+        status.textContent = `Processing ${message.current} of ${message.total}...`;
+      } else if (message.type === 'complete') {
+        status.textContent = 'Complete!';
+        status.className = 'status success';
+        result.textContent = message.result.message;
+        port.disconnect();
+        setTimeout(() => { button.disabled = false; }, 500);
+      }
+    });
 
-      // Re-enable button after a short delay
-      setTimeout(() => {
+    port.onDisconnect.addListener(() => {
+      if (button.disabled) {
+        status.textContent = 'Error!';
+        status.className = 'status error';
+        result.textContent = chrome.runtime.lastError?.message ?? 'Unexpected disconnect.';
         button.disabled = false;
-      }, 500);
-    } catch (error) {
-      status.textContent = 'Error!';
-      status.className = 'status error';
-      result.textContent = `Error: ${error instanceof Error ? error.message : String(error)}`;
-      button.disabled = false;
-    }
+      }
+    });
+
+    port.postMessage({
+      action: 'refreshBookmarks',
+      mode: updateAllCheckbox.checked ? 'empty' : 'all'
+    });
   });
 });
