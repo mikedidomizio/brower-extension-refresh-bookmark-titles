@@ -3,7 +3,7 @@
   "name": "Refresh Bookmarks",
   "version": "1.0.0",
   "description": "Fetch live page titles and update your bookmarks automatically",
-  "permissions": ["bookmarks", "activeTab"],
+  "permissions": ["bookmarks"],
   "host_permissions": [
     "<all_urls>"
   ],
