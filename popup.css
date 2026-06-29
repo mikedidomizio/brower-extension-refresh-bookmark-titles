@@ -99,3 +99,39 @@ h1 {
 .scopeOption input {
   margin: 0;
 }
+
+.failures {
+  margin: 8px 0 0 0;
+  padding: 8px 8px 8px 24px;
+  border-radius: 4px;
+  border: 1px solid #FFCDD2;
+  background-color: #FFF8F8;
+  list-style: disc;
+}
+
+.failure-item {
+  font-size: 12px;
+  margin-bottom: 6px;
+  color: #555;
+}
+
+.failure-item:last-child {
+  margin-bottom: 0;
+}
+
+.failure-title {
+  display: block;
+  font-weight: 600;
+  color: #333;
+}
+
+.failure-url {
+  display: block;
+  color: #1976D2;
+  word-break: break-all;
+  text-decoration: none;
+}
+
+.failure-url:hover {
+  text-decoration: underline;
+}

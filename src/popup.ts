@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const output = document.getElementById('output') as HTMLDivElement;
   const status = document.getElementById('status') as HTMLDivElement;
   const result = document.getElementById('result') as HTMLDivElement;
+  const failures = document.getElementById('failures') as HTMLUListElement;
 
   button.addEventListener('click', async () => {
     button.disabled = true;
@@ -11,6 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
     status.textContent = 'Starting...';
     status.className = 'status loading';
     result.textContent = '';
+    failures.innerHTML = '';
+    failures.classList.add('hidden');
 
     const port = chrome.runtime.connect({ name: 'refresh' });
 
@@ -21,6 +24,28 @@ document.addEventListener('DOMContentLoaded', () => {
         status.textContent = 'Complete!';
         status.className = 'status success';
         result.textContent = message.result.message;
+
+        const failureList: Array<{ title: string; url: string }> = message.result.failures ?? [];
+        if (failureList.length > 0) {
+          failures.innerHTML = '';
+          for (const f of failureList) {
+            const li = document.createElement('li');
+            li.className = 'failure-item';
+            const titleSpan = document.createElement('span');
+            titleSpan.className = 'failure-title';
+            titleSpan.textContent = f.title;
+            const urlA = document.createElement('a');
+            urlA.className = 'failure-url';
+            urlA.href = f.url;
+            urlA.target = '_blank';
+            urlA.textContent = f.url;
+            li.appendChild(titleSpan);
+            li.appendChild(urlA);
+            failures.appendChild(li);
+          }
+          failures.classList.remove('hidden');
+        }
+
         port.disconnect();
         setTimeout(() => { button.disabled = false; }, 500);
       }

@@ -36,11 +36,17 @@ function isValidUrl(url: string): boolean {
 
 type RefreshMode = 'empty' | 'all';
 
+type FailedBookmark = {
+  title: string;
+  url: string;
+};
+
 type RefreshResult = {
   processed: number;
   updated: number;
   unchanged: number;
   failed: number;
+  failures: FailedBookmark[];
   message: string;
 };
 
@@ -74,6 +80,7 @@ async function refreshBookmarks(
   let updated = 0;
   let unchanged = 0;
   let failed = 0;
+  const failures: FailedBookmark[] = [];
 
   for (let i = 0; i < targets.length; i++) {
     const node = targets[i];
@@ -92,17 +99,19 @@ async function refreshBookmarks(
       } catch (error) {
         console.error(`Failed to update bookmark ${node.id}:`, error);
         failed++;
+        failures.push({ title: node.title || node.url!, url: node.url! });
       }
     } else {
       console.warn(`Could not fetch title for ${node.url}`);
       failed++;
+      failures.push({ title: node.title || node.url!, url: node.url! });
     }
   }
 
   const modeLabel = mode === 'all' ? 'all bookmarks' : 'empty-title bookmarks';
   const message = `Refreshed ${modeLabel}: ${total} processed, ${updated} updated, ${unchanged} unchanged, ${failed} failed`;
   console.log(message);
-  return { processed: total, updated, unchanged, failed, message };
+  return { processed: total, updated, unchanged, failed, failures, message };
 }
 
 chrome.runtime.onConnect.addListener((port) => {
@@ -121,7 +130,7 @@ chrome.runtime.onConnect.addListener((port) => {
       console.error('Error refreshing bookmarks:', error);
       port.postMessage({
         type: 'complete',
-        result: { processed: 0, updated: 0, unchanged: 0, failed: 0, message: `Error: ${error.message}` }
+        result: { processed: 0, updated: 0, unchanged: 0, failed: 0, failures: [], message: `Error: ${error.message}` }
       });
     });
   });
