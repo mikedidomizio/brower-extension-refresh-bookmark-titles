@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     status.textContent = 'Starting...';
     status.className = 'status loading';
     result.textContent = '';
+    result.classList.add('hidden');
     failures.innerHTML = '';
     failures.classList.add('hidden');
 
@@ -24,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
         status.textContent = 'Complete!';
         status.className = 'status success';
         result.textContent = message.result.message;
+        result.classList.remove('hidden');
 
         const failureList: Array<{ title: string; url: string }> = message.result.failures ?? [];
         if (failureList.length > 0) {
@@ -56,6 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
         status.textContent = 'Error!';
         status.className = 'status error';
         result.textContent = chrome.runtime.lastError?.message ?? 'Unexpected disconnect.';
+        result.classList.remove('hidden');
         button.disabled = false;
       }
     });
