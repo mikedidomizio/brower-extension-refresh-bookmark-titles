@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const response = await chrome.runtime.sendMessage({
         action: 'refreshBookmarks',
-        mode: updateAllCheckbox.checked ? 'all' : 'empty'
+        mode: updateAllCheckbox.checked ? 'empty' : 'all'
       });
 
       status.textContent = 'Complete!';
