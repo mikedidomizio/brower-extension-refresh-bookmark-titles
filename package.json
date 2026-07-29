@@ -11,9 +11,9 @@
   "dependencies": {},
   "devDependencies": {
     "@types/chrome": "^0.0.268",
-    "archiver": "^7.0.1",
+    "archiver": "^8.0.0",
     "sharp": "^0.34.2",
-    "shx": "^0.3.4",
+    "shx": "^0.4.0",
     "typescript": "^5.5.3"
   },
   "private": true
